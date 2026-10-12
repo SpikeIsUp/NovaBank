@@ -1,0 +1,12 @@
+# secret
+.env
+*.key
+*.pem
+
+# temp
+*.log
+*.tmp
+
+# db backups
+*.dumb
+*.backup
