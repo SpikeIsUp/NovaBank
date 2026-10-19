@@ -1,12 +1,14 @@
-# secret
+# Secrets
 .env
+.env.*
 *.key
 *.pem
 
-# temp
+# Temporary files
 *.log
 *.tmp
 
-# db backups
-*.dumb
+# PostgreSQL backups
+backups/
+*.dump
 *.backup
