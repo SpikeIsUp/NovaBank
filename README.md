@@ -625,7 +625,7 @@ Chiffrer les connexions entre PostgreSQL et les clients.
 
 ### Technologies
 
-- TLS 1.3
+- TLS 1.3 (déjà installé sur ubuntu)
 - OpenSSL
 - `hostssl`
 - `pg_hba.conf`
