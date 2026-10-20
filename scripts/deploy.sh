@@ -1,7 +1,3 @@
-
-cd ~/NovaBank
-
-cat > scripts/deploy.sh <<'BASH'
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
@@ -143,6 +139,3 @@ sudo -u postgres psql -d "$DB" -c \
 echo
 echo "Bonus CYBER non executes automatiquement."
 BASH
-
-chmod +x scripts/deploy.sh
-bash -n scripts/deploy.sh
