@@ -183,6 +183,91 @@ sudo systemctl status postgresql
 
 # 5. Déploiement automatisé
 
+## Préparation des permissions Linux
+
+Lors du déploiement, PostgreSQL doit pouvoir accéder aux fichiers SQL du projet NovaBank.
+
+### 1. Installer les outils nécessaires
+
+```bash
+sudo apt update
+sudo apt install acl -y
+```
+
+### 2. Configurer les permissions
+
+Depuis le dossier `~/NovaBank`, exécuter :
+
+```bash
+sudo setfacl -m u:postgres:x "$HOME"
+sudo setfacl -m u:postgres:x "$HOME/NovaBank"
+sudo setfacl -R -m u:postgres:rX "$HOME/NovaBank/sql"
+```
+
+Ces commandes permettent à l'utilisateur `postgres` de lire les fichiers SQL sans modifier les permissions des autres utilisateurs.
+
+### 3. Vérifier les permissions
+
+```bash
+sudo -u postgres test -r "$HOME/NovaBank/sql/02_tables.sql" && echo "OK"
+```
+
+Si `OK` apparaît, les permissions sont correctement configurées.
+
+## Déploiement de NovaBank
+
+Depuis le dossier du projet :
+
+```bash
+cd ~/NovaBank
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
+```
+
+Le script initialise la base PostgreSQL `bankdb` et exécute les fichiers SQL du projet.
+
+## Dépannage
+
+### Erreur : Permission denied
+
+**Cause :** l'utilisateur `postgres` ne peut pas accéder aux fichiers SQL.
+
+**Solution :** appliquer les commandes ACL indiquées dans la section « Préparation des permissions Linux ».
+
+### Erreur : database "bankdb" already exists
+
+**Cause :** une précédente tentative de déploiement a déjà créé la base de données.
+
+**Solution :** si la machine est uniquement utilisée pour les tests et qu'aucune donnée ne doit être conservée :
+
+```bash
+sudo -u postgres dropdb bankdb
+```
+
+Relancer ensuite le déploiement :
+
+```bash
+./scripts/deploy.sh
+```
+
+**Attention :** la suppression de `bankdb` entraîne la perte définitive de toutes ses données. Ne jamais utiliser cette commande sur une base contenant des données importantes.
+
+### Vérifier le déploiement
+
+Afficher les tables du schéma `core` :
+
+```bash
+sudo -u postgres psql -d bankdb -c '\dt core.*'
+```
+
+Afficher les tables du schéma `audit` :
+
+```bash
+sudo -u postgres psql -d bankdb -c '\dt audit.*'
+```
+
+Si les tables attendues sont présentes et que le script s'est terminé sans erreur, le déploiement a réussi.
+
 Le projet contient un script de déploiement :
 
 `scripts/deploy.sh`
